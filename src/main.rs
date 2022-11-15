@@ -2,28 +2,47 @@
 #![no_main]
 #![no_std]
 
-
 use cortex_m::asm;
 use cortex_m_rt::entry;
-use panic_semihosting as _;
-use stm32f3xx_hal::{self as hal, pac, prelude::*, pwm::tim3, time::rate::*};
+use panic_rtt_target as _;
+use stm32f3xx_hal as hal;
+use hal::pac;
+use hal::prelude::*;
+use hal::pwm::{tim3,tim16};
+use hal::time::rate::*;
+
+
 
 
 #[entry]
 fn main() -> ! {
-    // dp = pac::Peripherals::take().unwrap();
-    let dp = stm32f303::Peripherals::take().unwrap();
+  
 
+
+
+    //set the resolution of our duty cycle to 9000 
+    //period to 50Hz
+
+    // Set the resolution of our duty cycle to 9000 and our period to
+    // 50Hz.
+
+    let dp = pac::Peripherals::take().unwrap();
+
+    let mut flash = dp.FLASH.constrain();
 
     let mut rcc = dp.RCC.constrain();
-    let mut gpioe = dp.GPIOE.split(&mut rcc.ahb);
-
-    let mut led = gpioe
-          .pe13
-          .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-
+    
+    let clock = rcc.cfgr.freeze(&mut flash.acr);
+  
+    let mut flash = dp.FLASH.constrain();
+    let mut rcc = dp.RCC.constrain();
+    let clocks = rcc.cfgr.freeze(&mut flash.acr);
+  
+    // Set the resolution of our duty cycle to 9000 and our period to
+    // 50Hz.
+    let mut c1_no_pins = tim16(device.TIM3, 9000, 50.Hz(), clocks);
     loop {
-          led.toggle().unwrap();
           asm::delay(8_000_000);
     }
-}
+}   
+ 
