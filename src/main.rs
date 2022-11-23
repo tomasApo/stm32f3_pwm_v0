@@ -16,7 +16,7 @@ use hal::rcc::RccExt;
 #[entry]
 fn main() -> ! {
         let dp = pac::Peripherals::take().unwrap();
-
+        use rtt_target::{rprintln, rtt_init_print};
         let mut flash = dp.FLASH.constrain();
         let mut rcc = dp.RCC.constrain();
         let clocks = rcc.cfgr.freeze(&mut flash.acr);
@@ -34,9 +34,20 @@ fn main() -> ! {
 
         // Each channel can be used with a different duty cycle and have many pins
         let mut tim3_ch1 = tim3_channels.0.output_to_pa6(pa6);
-        tim3_ch1.set_duty(tim3_ch1.get_max_duty() / 20); // 5% duty cyle
-        tim3_ch1.enable();
 
+        //tim3_ch1.get_max_duty() = 1280
+        
+        //cortex_m::asm::delay(5_000_000);
+        
         loop {
+            tim3_ch1.set_duty(tim3_ch1.get_max_duty()/10); // 5% duty cyle
+            tim3_ch1.enable();
+            cortex_m::asm::delay(5_000_000);
+            tim3_ch1.set_duty(tim3_ch1.get_max_duty()/20); // 5% duty cyle
+            tim3_ch1.enable();
+            cortex_m::asm::delay(5_000_000);
+            //rtt_init_print!();
+            //rprintln!("{}",tim3_ch1.get_max_duty());
+            
         }     
 }
