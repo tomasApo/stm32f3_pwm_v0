@@ -1,46 +1,42 @@
-#![deny(unsafe_code)]
-#![no_main]
 #![no_std]
+#![no_main]
 
-
-use stm32f3xx_hal as hal;
-
+//cuse cortex_m::asm;
 use cortex_m_rt::entry;
+use panic_halt as _;
+use stm32f3xx_hal as hal;
 use hal::pac;
-use hal::prelude::*;
-use panic_semihosting as _;
-
+use hal::flash::FlashExt;
+use hal::time::U32Ext;
+use hal::pwm::tim3;
+use hal::hal::PwmPin;
+use hal::gpio::GpioExt;
+use hal::rcc::RccExt;
 
 #[entry]
 fn main() -> ! {
-    let dp = pac::Peripherals::take().unwrap();
+        let dp = pac::Peripherals::take().unwrap();
 
-    let mut rcc = dp.RCC.constrain();
-    let mut gpioe = dp.GPIOE.split(&mut rcc.ahb);
+        let mut flash = dp.FLASH.constrain();
+        let mut rcc = dp.RCC.constrain();
+        let clocks = rcc.cfgr.freeze(&mut flash.acr);
 
-    let mut led = gpioe
-        .pe13
-        .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
+        let mut gpioa = dp.GPIOA.split(&mut rcc.ahb);
+        //let pa4 = gpioa.pa4.into_af2(&mut gpioa.moder, &mut gpioa.afrl);
+        let pa6 = gpioa.pa6.into_af2(&mut gpioa.moder, &mut gpioa.afrl);
 
-    led.set_low().unwrap();
+        let tim3_channels = tim3(
+            dp.TIM3,
+            1280,    // resolution of duty cycle
+            50.hz(), // frequency of period
+            &clocks, // To get the timer's clock speed
+        );
 
-    loop {
-        led.toggle().unwrap();
-        cortex_m::asm::delay(1_000_000);
+        // Each channel can be used with a different duty cycle and have many pins
+        let mut tim3_ch1 = tim3_channels.0.output_to_pa6(pa6);
+        tim3_ch1.set_duty(tim3_ch1.get_max_duty() / 20); // 5% duty cyle
+        tim3_ch1.enable();
 
-        
-        // Toggle by hand.
-        // Uses `StatefulOutputPin` instead of `ToggleableOutputPin`.
-        // Logically it is the same.
-        
-        /*
-        if led.is_set_low().unwrap() {
-            led.set_high().unwrap();
-        } else {
-            led.set_low().unwrap();
-        }
-        cortex_m::asm::delay(1_000_000);
-         */
-    }
-}   
- 
+        loop {
+        }     
+}
