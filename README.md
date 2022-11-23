@@ -1,6 +1,6 @@
-# `stm32f3xx_hal with simple pwm,`
+# `STM32F3DISCOVERY with simple pwm,
 
-A example of pwm working with a sg90 servo. 
+A example of pwm & stm32f3xx_hal working with a sg90 servo. 
 [sg90_datasheet.pdf](https://github.com/tomasApo/stm32f3_pwm_v0/files/10079242/sg90_datasheet.pdf)
 ![sg90_datasheet](https://user-images.githubusercontent.com/75183079/203648975-9e35506e-71cb-4df4-bebb-52f5090d2ed7.jpg)
 
