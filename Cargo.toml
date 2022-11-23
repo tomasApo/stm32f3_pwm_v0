@@ -7,12 +7,13 @@ version = "0.1.0"
 
 [dependencies]
 cortex-m = "0.7"
-cortex-m-rt = {version ="0.7", features = ["device"]}
+cortex-m-rt = "0.7"
 cortex-m-semihosting = "0.3.3"
 
 rtt-target = {version = "0.3.1", features=["cortex-m"]}
-panic-rtt-target = {version = "0.1.2", features=["cortex-m"]}
-stm32f3xx-hal = { version = "0.9.1", features = [ "stm32f303xc", "rt", "stm32-usbd","can"] }
+#panic-rtt-target = {version = "0.1.2", features=["cortex-m"]}
+panic-semihosting = "0.5.6"
+stm32f3xx-hal = { version = "0.9.1", features = ["ld","rtc","defmt", "rt", "stm32f303xc"] }
 stm32f3 = "0.12"
 
 
