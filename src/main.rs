@@ -10,7 +10,6 @@ use stm32f3xx_hal as hal;
 use hal::pac;
 use hal::flash::FlashExt;
 use hal::time::U32Ext;
-use hal::pwm::tim3;
 use hal::hal::PwmPin;
 use hal::gpio::GpioExt;
 use hal::rcc::RccExt;
@@ -27,7 +26,7 @@ fn main() -> ! {
         //let pa4 = gpioa.pa4.into_af2(&mut gpioa.moder, &mut gpioa.afrl);
         let pa6 = gpioa.pa6.into_af2(&mut gpioa.moder, &mut gpioa.afrl);
 
-        let tim3_channels = tim3(
+        let tim3_channels = hal::pwm::tim3(
             dp.TIM3,
             1280,    // resolution of duty cycle
             50.hz(), // frequency of period
